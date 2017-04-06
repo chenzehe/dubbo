@@ -7,7 +7,6 @@ package com.alibaba.dubbo.rpc.benchmark;
  *   http://code.google.com/p/nfs-rpc (c) 2011
  */
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
@@ -82,7 +81,13 @@ public abstract class AbstractBenchmarkClient {
         final int serverPort = Integer.parseInt(properties.getProperty("serverport"));
         final int concurrents = Integer.parseInt(properties.getProperty("concurrents"));
         final int timeout = Integer.parseInt(properties.getProperty("timeout"));
+        final String version = properties.getProperty("version");
+        final String group = properties.getProperty("group");
         runtime = Integer.parseInt(properties.getProperty("runtime"));
+        if(runtime<30){
+        	System.out.println("----------runtime必须大于30--------------");
+        	return;
+        }
         final long endtime = System.nanoTime() / 1000L + runtime * 1000 * 1000L;
         final int clientNums = Integer.parseInt(properties.getProperty("connectionnums"));
 
@@ -107,7 +112,7 @@ public abstract class AbstractBenchmarkClient {
         long beginTime = System.nanoTime() / 1000L + 30 * 1000 * 1000L;
         for (int i = 0; i < concurrents; i++) {
             ClientRunnable runnable = getClientRunnable(serverIP, serverPort, clientNums, timeout, barrier, latch,
-                                                        beginTime, endtime);
+                                                        beginTime, endtime, version, group);
             runnables.add(runnable);
         }
 
@@ -234,7 +239,7 @@ public abstract class AbstractBenchmarkClient {
 
     public abstract ClientRunnable getClientRunnable(String targetIP, int targetPort, int clientNums, int rpcTimeout,
                                                      CyclicBarrier barrier, CountDownLatch latch, long startTime,
-                                                     long endTime) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException;
+                                                     long endTime,String version, String group) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException;
 
     protected void startRunnables(List<ClientRunnable> runnables) {
         for (int i = 0; i < runnables.size(); i++) {

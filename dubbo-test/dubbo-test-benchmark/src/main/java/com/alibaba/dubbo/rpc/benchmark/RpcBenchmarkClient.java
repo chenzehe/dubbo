@@ -9,12 +9,12 @@ public class RpcBenchmarkClient extends AbstractBenchmarkClient {
     @SuppressWarnings("rawtypes")
     @Override
     public ClientRunnable getClientRunnable(String targetIP, int targetPort, int clientNums, int rpcTimeout,
-                                            CyclicBarrier barrier, CountDownLatch latch, long startTime, long endTime) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
+                                            CyclicBarrier barrier, CountDownLatch latch, long startTime, long endTime,String version,String group) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
         String runnable = properties.getProperty("classname");
         Class[] parameterTypes = new Class[] { String.class, int.class, int.class, int.class, CyclicBarrier.class,
-                CountDownLatch.class, long.class, long.class };
+                CountDownLatch.class, long.class, long.class,String.class,String.class };
         Object[] parameters = new Object[] { targetIP, targetPort, clientNums, rpcTimeout, barrier, latch, startTime,
-                endTime };
+                endTime ,version,group};
            return (ClientRunnable) Class.forName(runnable).getConstructor(parameterTypes).newInstance(parameters);
     }
 

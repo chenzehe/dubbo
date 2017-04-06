@@ -30,8 +30,8 @@ public class DemoBenchmarkClientRunnable extends AbstractClientRunnable{
 
     public DemoBenchmarkClientRunnable(String targetIP, int targetPort, int clientNums, int rpcTimeout,
                                        CyclicBarrier barrier, CountDownLatch latch, long startTime,
-                                       long endTime){
-        super(targetIP, targetPort, clientNums, rpcTimeout, barrier, latch, startTime, endTime);
+                                       long endTime,String version,String group){
+        super(targetIP, targetPort, clientNums, rpcTimeout, barrier, latch, startTime, endTime,version,group);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

@@ -52,7 +52,7 @@ public abstract class AbstractClientRunnable implements ClientRunnable {
     private ServiceFactory   serviceFactory     = new ServiceFactory();
 
     public AbstractClientRunnable(String targetIP, int targetPort, int clientNums, int rpcTimeout,
-                                  CyclicBarrier barrier, CountDownLatch latch, long startTime, long endTime){
+                                  CyclicBarrier barrier, CountDownLatch latch, long startTime, long endTime, String version, String group){
 
         this.barrier = barrier;
         this.latch = latch;
@@ -62,6 +62,8 @@ public abstract class AbstractClientRunnable implements ClientRunnable {
         serviceFactory.setClientNums(clientNums);
         serviceFactory.setTargetPort(targetPort);
         serviceFactory.setConnectTimeout(rpcTimeout);
+        serviceFactory.setVersion(version);
+        serviceFactory.setGroup(group);
         maxRange = (Integer.parseInt(String.valueOf((endTime - startTime))) / 1000000) + 1;
         errorTPS = new long[maxRange];
         errorResponseTimes = new long[maxRange];

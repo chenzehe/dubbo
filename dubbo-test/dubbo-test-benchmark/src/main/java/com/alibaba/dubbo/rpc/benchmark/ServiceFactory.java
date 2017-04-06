@@ -19,6 +19,47 @@ public class ServiceFactory<T> {
     int    connectTimeout = 0;
 
     int    clientNums     = 0;
+    
+    String version        = null;
+    String group          = null;
+
+    // Cache ExchangeClient
+    private static ConcurrentHashMap<String, Object> services = new ConcurrentHashMap<String, Object>();
+
+    @SuppressWarnings("unchecked")
+    public T get(final Class<T> cls){
+        String key = cls.getName();
+        if (services.containsKey(key)) {
+            return (T) services.get(key);
+
+        } else {
+            T service = createClient(cls, targetIP, targetPort, connectTimeout,clientNums,version,group);
+            services.put(key, service);
+            return (T) services.get(key);
+        }
+    }
+
+    protected T createClient(Class<T> cls, String targetIP, int targetPort, int connectTimeout,int clientNums,String version,String group){
+        ReferenceConfig<T> referenceConfig = new ReferenceConfig<T>();
+        referenceConfig.setInterface(cls);
+        StringBuilder url = new StringBuilder();
+        url.append("dubbo://");
+        url.append(targetIP);
+        url.append(":");
+        url.append(targetPort);
+        url.append("/");
+        url.append(cls.getName());
+        referenceConfig.setUrl(url.toString());
+        // hardcode
+        referenceConfig.setConnections(clientNums);
+        ApplicationConfig application = new ApplicationConfig();
+        application.setName("dubbo_consumer");
+        referenceConfig.setApplication(application);
+        referenceConfig.setTimeout(connectTimeout);
+        referenceConfig.setVersion(version);
+        referenceConfig.setGroup(group);
+        return referenceConfig.get();
+    }
 
     public String getTargetIP() {
         return targetIP;
@@ -52,40 +93,20 @@ public class ServiceFactory<T> {
         this.clientNums = clientNums;
     }
 
-    // Cache ExchangeClient
-    private static ConcurrentHashMap<String, Object> services = new ConcurrentHashMap<String, Object>();
+	public String getVersion() {
+		return version;
+	}
 
-    @SuppressWarnings("unchecked")
-    public T get(final Class<T> cls){
-        String key = cls.getName();
-        if (services.containsKey(key)) {
-            return (T) services.get(key);
+	public void setVersion(String version) {
+		this.version = version;
+	}
 
-        } else {
-            T service = createClient(cls, targetIP, targetPort, connectTimeout,clientNums);
-            services.put(key, service);
-            return (T) services.get(key);
-        }
-    }
+	public String getGroup() {
+		return group;
+	}
 
-    protected T createClient(Class<T> cls, String targetIP, int targetPort, int connectTimeout,int clientNums){
-        ReferenceConfig<T> referenceConfig = new ReferenceConfig<T>();
-        referenceConfig.setInterface(cls);
-        StringBuilder url = new StringBuilder();
-        url.append("dubbo://");
-        url.append(targetIP);
-        url.append(":");
-        url.append(targetPort);
-        url.append("/");
-        url.append(cls.getName());
-        referenceConfig.setUrl(url.toString());
-        // hardcode
-        referenceConfig.setConnections(clientNums);
-        ApplicationConfig application = new ApplicationConfig();
-        application.setName("dubbo_consumer");
-        referenceConfig.setApplication(application);
-        referenceConfig.setTimeout(connectTimeout);
-        return referenceConfig.get();
-    }
-
+	public void setGroup(String group) {
+		this.group = group;
+	}
+    
 }
